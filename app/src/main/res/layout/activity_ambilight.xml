@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_blue"
+    android:orientation="vertical"
+    android:paddingLeft="0dp"
+    android:paddingTop="0dp">
+
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#007194"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="35dp"
+            android:layout_height="40dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            app:srcCompat="@drawable/backicon" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="289dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="HUE AMBILIGHT"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/settingsButton"
+            android:layout_width="35dp"
+            android:layout_height="40dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            app:srcCompat="@drawable/settings" />
+
+    </GridLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:orientation="horizontal">
+
+        <com.camera.simplemjpeg.MjpegView
+            android:id="@+id/mv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/msgView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:paddingTop="10dp"
+            android:text="Click buttons below to begin:"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <ToggleButton
+            android:id="@+id/toggleWebcamButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/my_btn_toggle"
+            android:checked="true"
+            android:text="ToggleButton"
+            android:textOff="Stop Webcam Stream"
+            android:textOn="Start Webcam Stream" />
+
+        <ToggleButton
+            android:id="@+id/toggleAmbilightButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/my_btn_toggle"
+            android:checked="true"
+            android:text="ToggleButton"
+            android:textOff="Stop Ambilight Sync"
+            android:textOn="Start Ambilight Sync" />
+
+        <ToggleButton
+            android:id="@+id/toggleLightsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@drawable/my_btn_toggle"
+            android:checked="true"
+            android:text="ToggleButton"
+            android:textOff="Turn Lights Off"
+            android:textOn="Turn Lights On" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+
+
+

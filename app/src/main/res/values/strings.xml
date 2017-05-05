@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">SmartHouse</string>
+    <color name="light_blue">#1da6d0</color>
+
+        <string name="digits_increment">+</string>
+        <string name="digits_decrement">-</string>
+        <string name="address_dot">.</string>
+        <string name="port_8080">8080</string>
+        <string name="port_8080_with_explanation">8080 (for IP Webcam)</string>
+
+        <string name="command_videofeed">videofeed</string>
+
+        <string name="title_disconnected">Disconnected</string>
+        <string name="title_connecting">Connecting...</string>
+        <string name="title_imageerror">Error on preparing images</string>
+
+</resources>
