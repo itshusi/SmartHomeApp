@@ -6,7 +6,6 @@
         <string name="digits_decrement">-</string>
         <string name="address_dot">.</string>
         <string name="port_8080">8080</string>
-        <string name="port_8080_with_explanation">8080 (for IP Webcam)</string>
 
         <string name="command_videofeed">videofeed</string>
 

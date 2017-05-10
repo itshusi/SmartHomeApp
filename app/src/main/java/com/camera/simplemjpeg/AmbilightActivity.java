@@ -32,43 +32,41 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 
 public class AmbilightActivity extends AppCompatActivity {
     private static final boolean DEBUG = false;
     private static final String TAG = "MJPEG";
-
-    private MjpegView mv = null;
+    final Handler handler = new Handler();
+    final String serverUri = "tcp://m21.cloudmqtt.com:14403";
+    final String subscriptionTopic = "startambilight";
+    final String publishTopic = "startambilight";
+    UpdateAmbilightStatus mTask = null;
+    String apiURL = "";
     String URL;
     TextView msgView;
     ImageView backButton;
     ToggleButton webcamToggle;
     ToggleButton ambilightToggle;
     ToggleButton lightsToggle;
+    MqttAndroidClient mqttAndroidClient;
+    String clientId = "1234566789";
+    private MjpegView mv = null;
     private int width = 640;
     private int height = 480;
-
     private int ip_ad1 = 192;
     private int ip_ad2 = 168;
     private int ip_ad3 = 0;
     private int ip_ad4 = 43;
     private int ip_port = 8080;
     private String ip_command = "videofeed";
-
     private boolean suspending = false;
-
-    final Handler handler = new Handler();
-
-    MqttAndroidClient mqttAndroidClient;
-
-    final String serverUri = "tcp://m21.cloudmqtt.com:14403";
-
-    String clientId = "1234566789";
-    final String subscriptionTopic = "startambilight";
-    final String publishTopic = "startambilight";
-
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,14 +110,18 @@ public class AmbilightActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
+                apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=7&status=";
                 if (webcamToggle.isChecked()) {
                     mv.stopPlayback();
                     mv.setBackgroundColor(lightBlue);
                     msgView.setText("Click a button below to begin a task:");
+                    mTask = new UpdateAmbilightStatus(apiURL + "false");
+                    mTask.execute();
                 } else {
                     msgView.setText(R.string.title_connecting);
                     mv.setBackgroundColor(Color.TRANSPARENT);
+                    mTask = new UpdateAmbilightStatus(apiURL + "true");
+                    mTask.execute();
                     new DoRead().execute(URL);
                 }
             }
@@ -128,11 +130,15 @@ public class AmbilightActivity extends AppCompatActivity {
         lightsToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=6&status=";
                 if (lightsToggle.isChecked()){
                     publishMessage("OFF");
+                    mTask = new UpdateAmbilightStatus(apiURL + "false");
+                    mTask.execute();
                 } else {
                     publishMessage("ON");
+                    mTask = new UpdateAmbilightStatus(apiURL + "true");
+                    mTask.execute();
                 }
             }
         });
@@ -140,16 +146,21 @@ public class AmbilightActivity extends AppCompatActivity {
         ambilightToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=5&status=";
                 if (ambilightToggle.isChecked()){
                     publishMessage("STOP");
                     lightsToggle.setEnabled(true);
+                    mTask = new UpdateAmbilightStatus(apiURL + "false");
+                    mTask.execute();
                 } else {
                     publishMessage("START");
                     lightsToggle.setEnabled(false);
+                    mTask = new UpdateAmbilightStatus(apiURL + "true");
+                    mTask.execute();
                 }
             }
         });
+
         clientId = clientId + System.currentTimeMillis();
 
         mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), serverUri, clientId);
@@ -162,7 +173,7 @@ public class AmbilightActivity extends AppCompatActivity {
                     // Because Clean Session is true, we need to re-subscribe
                     subscribeToTopic();
                 } else {
-                   //("Connected to: " + serverURI);
+                    //("Connected to: " + serverURI);
                 }
             }
 
@@ -291,7 +302,15 @@ public class AmbilightActivity extends AppCompatActivity {
 
     public void onDestroy() {
         if (DEBUG) Log.d(TAG, "onDestroy()");
-
+        apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=5&status=";
+        mTask = new UpdateAmbilightStatus(apiURL + "false");
+        mTask.execute();
+        apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=6&status=";
+        mTask = new UpdateAmbilightStatus(apiURL + "false");
+        mTask.execute();
+        apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=7&status=";
+        mTask = new UpdateAmbilightStatus(apiURL + "false");
+        mTask.execute();
         if (mv != null) {
             mv.freeCameraMemory();
         }
@@ -357,16 +376,45 @@ public class AmbilightActivity extends AppCompatActivity {
         }
     }
 
-    public class RestartApp extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void... v) {
-            AmbilightActivity.this.finish();
+    private class UpdateAmbilightStatus extends AsyncTask<Void,Void,Void> {
+        String url;
+
+        UpdateAmbilightStatus(String url){
+            this.url = url;
+        }
+
+        protected Void doInBackground(Void... params) {
+            try {
+                String SensorLogData = contactServer(url);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             return null;
         }
 
+        protected void onPostExecute(JSONArray result) {
 
-        protected void onPostExecute(Void v) {
-            startActivity((new Intent(AmbilightActivity.this, AmbilightActivity.class)));
         }
+
+        private String contactServer(String urlStr) {
+            java.net.URL url;
+            try {
+                url = new URL(urlStr);
+                HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+                httpCon.setDoOutput(true);
+                httpCon.setRequestMethod("POST");
+                OutputStreamWriter out = new OutputStreamWriter(
+                        httpCon.getOutputStream());
+                out.write("Resource content");
+                out.close();
+                httpCon.getInputStream();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+
     }
+
 
 }
