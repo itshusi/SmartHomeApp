@@ -60,10 +60,10 @@ public class AmbilightActivity extends AppCompatActivity {
     private MjpegView mv = null;
     private int width = 640;
     private int height = 480;
-    private int ip_ad1 = 192;
-    private int ip_ad2 = 168;
+    private int ip_ad1 = 127;
+    private int ip_ad2 = 0;
     private int ip_ad3 = 0;
-    private int ip_ad4 = 43;
+    private int ip_ad4 = 1;
     private int ip_port = 8080;
     private String ip_command = "videofeed";
     private boolean suspending = false;
@@ -96,21 +96,21 @@ public class AmbilightActivity extends AppCompatActivity {
             mv.setResolution(width, height);
         }
         msgView = (TextView) findViewById(R.id.msgView);
-        backButton = (ImageView)findViewById(R.id.backButton);
+        backButton = (ImageView) findViewById(R.id.backButton);
 
-        backButton.setOnClickListener(new View.OnClickListener(){
+        backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 startActivity(new Intent(AmbilightActivity.this, ControlsActivity.class));
             }
         });
 
-        webcamToggle = (ToggleButton)findViewById(R.id.toggleWebcamButton);
+        webcamToggle = (ToggleButton) findViewById(R.id.toggleWebcamButton);
 
         webcamToggle.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=7&status=";
+                apiURL = "http://smarthome.gear.host/api/updateDeviceStatus?id=7&status=";
                 if (webcamToggle.isChecked()) {
                     mv.stopPlayback();
                     mv.setBackgroundColor(lightBlue);
@@ -130,8 +130,8 @@ public class AmbilightActivity extends AppCompatActivity {
         lightsToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=6&status=";
-                if (lightsToggle.isChecked()){
+                apiURL = "http://smarthome.gear.host/api/updateDeviceStatus?id=6&status=";
+                if (lightsToggle.isChecked()) {
                     publishMessage("OFF");
                     mTask = new UpdateAmbilightStatus(apiURL + "false");
                     mTask.execute();
@@ -146,8 +146,8 @@ public class AmbilightActivity extends AppCompatActivity {
         ambilightToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=5&status=";
-                if (ambilightToggle.isChecked()){
+                apiURL = "http://smarthome.gear.host/api/updateDeviceStatus?id=5&status=";
+                if (ambilightToggle.isChecked()) {
                     publishMessage("STOP");
                     lightsToggle.setEnabled(true);
                     mTask = new UpdateAmbilightStatus(apiURL + "false");
@@ -196,7 +196,7 @@ public class AmbilightActivity extends AppCompatActivity {
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setUserName("huseyin");
-        mqttConnectOptions.setPassword(new char[]{'h','u','s','e','y','i','n'});
+        mqttConnectOptions.setPassword(new char[]{'h', 'u', 's', 'e', 'y', 'i', 'n'});
         mqttConnectOptions.setCleanSession(false);
         mqttConnectOptions.setConnectionTimeout(240000);
 
@@ -220,11 +220,12 @@ public class AmbilightActivity extends AppCompatActivity {
             });
 
 
-        } catch (MqttException ex){
+        } catch (MqttException ex) {
             ex.printStackTrace();
         }
     }
-    public void subscribeToTopic(){
+
+    public void subscribeToTopic() {
         try {
             mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {
                 @Override
@@ -247,13 +248,13 @@ public class AmbilightActivity extends AppCompatActivity {
                 }
             });
 
-        } catch (MqttException ex){
+        } catch (MqttException ex) {
             System.err.println("Exception whilst subscribing");
             ex.printStackTrace();
         }
     }
 
-    public void publishMessage(String msg){
+    public void publishMessage(String msg) {
 
         try {
             MqttMessage message = new MqttMessage();
@@ -302,13 +303,13 @@ public class AmbilightActivity extends AppCompatActivity {
 
     public void onDestroy() {
         if (DEBUG) Log.d(TAG, "onDestroy()");
-        apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=5&status=";
+        apiURL = "http://smarthome.gear.host/api/updateDeviceStatus?id=5&status=";
         mTask = new UpdateAmbilightStatus(apiURL + "false");
         mTask.execute();
-        apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=6&status=";
+        apiURL = "http://smarthome.gear.host/api/updateDeviceStatus?id=6&status=";
         mTask = new UpdateAmbilightStatus(apiURL + "false");
         mTask.execute();
-        apiURL="http://smarthome.gear.host/api/updateDeviceStatus?id=7&status=";
+        apiURL = "http://smarthome.gear.host/api/updateDeviceStatus?id=7&status=";
         mTask = new UpdateAmbilightStatus(apiURL + "false");
         mTask.execute();
         if (mv != null) {
@@ -376,17 +377,17 @@ public class AmbilightActivity extends AppCompatActivity {
         }
     }
 
-    private class UpdateAmbilightStatus extends AsyncTask<Void,Void,Void> {
+    private class UpdateAmbilightStatus extends AsyncTask<Void, Void, Void> {
         String url;
 
-        UpdateAmbilightStatus(String url){
+        UpdateAmbilightStatus(String url) {
             this.url = url;
         }
 
         protected Void doInBackground(Void... params) {
             try {
                 String SensorLogData = contactServer(url);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
